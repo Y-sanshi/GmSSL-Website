@@ -65,7 +65,9 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
    $ gmssl pkeyutl -sign -pkeyopt ec_sign_algor:sm2 -inkey signkey.pem \
                    -in <yourfile> -out <yourfile>.sig
    ```
+
    可以将公钥从`signkey.pem`中导出并发发布给验证签名的一方
+
    ```sh
    $ gmssl pkey -in signkey.pem -out vrfykey.pem
    $ gmssl pkeyutl -verify -pkeyopt ec_sign_algor:sm2 -inkey vrfykey.pem \
