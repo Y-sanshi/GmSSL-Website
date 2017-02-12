@@ -1,5 +1,3 @@
 theme: jekyll-theme-cayman
 title: The GmSSL Project
 description: 支持国密SM2/SM3/SM4/SM9的密码工具箱
-github.is_project_page: false
-show_downloads: false
