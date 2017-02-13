@@ -79,10 +79,10 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
 
 用户手册：
 
-[编译与安装](https://github.com/guanzhi/GmSSL/wiki/install)；
-[命令行工具手册](https://github.com/guanzhi/GmSSL/wiki/commands.md)；
- [GmSSL EVP API](https://github.com/guanzhimSSL/blob/develop/doc/gmssl/evp.md)；
- [GmSSL Java API](https://github.com/guanzhi/GmSSL/blob/develop/doc/gmssl/java.md)；
+* [编译与安装](https://github.com/guanzhi/GmSSL/wiki/install)；
+* [命令行工具手册](https://github.com/guanzhi/GmSSL/wiki/commands.md)；
+* [GmSSL EVP API](https://github.com/guanzhimSSL/blob/develop/doc/gmssl/evp.md)；
+* [GmSSL Java API](https://github.com/guanzhi/GmSSL/blob/develop/doc/gmssl/java.md)；
 
 密码算法
 
