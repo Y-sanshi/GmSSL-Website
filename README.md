@@ -86,28 +86,27 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
 
 密码算法
 
-[SM1分组密码](https://github.com/guanzhi/GmSSL/wiki/sm1)
-[SSF33分组密码](https://github.com/guanzhi/GmSSL/wiki/ssf33)
-[SM2椭圆曲线公钥密码](https://github.com/guanzhi/GmSSL/wiki/sm2)
-[SM3密码杂凑算法](https://github.com/guanzhi/GmSSL/wiki/sm3)
-[SM4/SMS4分组密码](https://github.com/guanzhi/GmSSL/wiki/sms4)
-[SM9基于身份的密码](https://github.com/guanzhi/GmSSL/wiki/sm9)
-[ZUC序列密码](https://github.com/guanzhi/GmSSL/blob/develop/doc/gmssl/zuc.md)
-[CPK组合公钥密码](https://github.com/guanzhi/GmSSL/wiki/cpk)
-[BF-IBE (Boneh-Franklin Identity-Based Encryption)](https://github.com/guanzhi/GmSSL/wiki/bfibe)
-[BB~1~-IBE (Boneh-Boyen Identity-Based Encryption)](https://github.com/guanzhi/GmSSL/wiki/bb1-ibe)
+* [SM1分组密码](https://github.com/guanzhi/GmSSL/wiki/sm1)
+* [SSF33分组密码](https://github.com/guanzhi/GmSSL/wiki/ssf33)
+* [SM2椭圆曲线公钥密码](https://github.com/guanzhi/GmSSL/wiki/sm2)
+* [SM3密码杂凑算法](https://github.com/guanzhi/GmSSL/wiki/sm3)
+* [SM4/SMS4分组密码](https://github.com/guanzhi/GmSSL/wiki/sms4)
+* [SM9基于身份的密码](https://github.com/guanzhi/GmSSL/wiki/sm9)
+* [ZUC序列密码](https://github.com/guanzhi/GmSSL/blob/develop/doc/gmssl/zuc.md)
+* [CPK组合公钥密码](https://github.com/guanzhi/GmSSL/wiki/cpk)
+* [BF-IBE (Boneh-Franklin Identity-Based Encryption)](https://github.com/guanzhi/GmSSL/wiki/bfibe)
+* [BB~1~-IBE (Boneh-Boyen Identity-Based Encryption)](https://github.com/guanzhi/GmSSL/wiki/bb1-ibe)
 
 安全协议：
 
-[SSL/TLS协议]()、
-[国密SSL VPN协议]()；
-[国密IPSec VPN协议]()；
+* [SSL/TLS协议]()、
+* [国密SSL VPN协议]()；
+* [国密IPSec VPN协议]()；
 
 开发者：
-[GmSSL编码风格 (Coding Style)](https://github.com/guanzhi/GmSSL/blob/develop/doc/gmssl/codingstyle.md)；
-[开发路线 (Road Map)]()；
+* [GmSSL编码风格 (Coding Style)](https://github.com/guanzhi/GmSSL/blob/develop/doc/gmssl/codingstyle.md)；
+* [开发路线 (Road Map)]()；
 
 国密应用编程接口(GmSSL SAF/SDF/SKF/SOF API)；
-- 标准规范：[中华人民共和国密码行业标准(共44项)]()；
-  [国密算法标识OID](https://github.com/guanzhi/GmSSL/blob/develop/doc/gmssl/oid.md)
-
+* 标准规范：[中华人民共和国密码行业标准(共44项)]()；
+* [国密算法标识OID](https://github.com/guanzhi/GmSSL/blob/develop/doc/gmssl/oid.md)
