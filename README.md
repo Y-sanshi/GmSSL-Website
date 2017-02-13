@@ -86,33 +86,25 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
    * [命令行工具手册](http://gmssl.org/docs/commands.html)
    * [GmSSL EVP API](http://gmssl.org/docs/evp-api.html)
    * [GmSSL Java API](http://gmssl.org/docs/java-api.html)
-
-密码算法
-
-* [SM1分组密码](http://gmssl.org/docs/sm1.html)
-* [SSF33分组密码](http://gmssl.org/docs/ssf33.html)
-* [SM2椭圆曲线公钥密码](http://gmssl.org/docs/sm2.html)
-* [SM3密码杂凑算法](http://gmssl.org/docs/sm3.html)
-* [SM4/SMS4分组密码](http://gmssl.org/docs/sm4.html)
-* [SM9基于身份的密码](http://gmssl.org/docs/sm9.html)
-* [ZUC序列密码](http://gmssl.org/docs/zuc.html)
-* [CPK组合公钥密码](http://gmssl.org/docs/cpk.html)
-* [BF-IBE (Boneh-Franklin Identity-Based Encryption)](http://gmssl.org/docs/bfibe.html)
-* [BB<sub>1</sub>-IBE (Boneh-Boyen Identity-Based Encryption)](http://gmssl.org/docs/bb1ibe.html)
-
-安全协议：
-
-* [SSL/TLS协议]()
-* [国密SSL VPN协议](http://gmssl.org/docs/sslvpn.html)
-* [国密IPSec VPN协议](http://gmssl.org/docs/ipsecvpn.html)
-
-开发者：
-
-* [GmSSL编码风格 (Coding Style)](http://gmssl.org/docs/gmssl-coding-style.html)
-* [开发路线 (Road Map)](http://gmssl.org/docs/roadmap.html)
-* [开源许可证 (GmSSL Licenses)](http://gmssl.org/docs/licenses.html)
-
-标准与规范：
-
-* [中华人民共和国密码行业标准](http://gmssl.org/docs/)；
-* [国密算法标识OID](http://gmssl.org/docs/oid.html)
+- 密码算法
+   * [SM1分组密码](http://gmssl.org/docs/sm1.html)
+   * [SSF33分组密码](http://gmssl.org/docs/ssf33.html)
+   * [SM2椭圆曲线公钥密码](http://gmssl.org/docs/sm2.html)
+   * [SM3密码杂凑算法](http://gmssl.org/docs/sm3.html)
+   * [SM4/SMS4分组密码](http://gmssl.org/docs/sm4.html)
+   * [SM9基于身份的密码](http://gmssl.org/docs/sm9.html)
+   * [ZUC序列密码](http://gmssl.org/docs/zuc.html)
+   * [CPK组合公钥密码](http://gmssl.org/docs/cpk.html)
+   * [BF-IBE (Boneh-Franklin Identity-Based Encryption)](http://gmssl.org/docs/bfibe.html)
+   * [BB<sub>1</sub>-IBE (Boneh-Boyen Identity-Based Encryption)](http://gmssl.org/docs/bb1ibe.html)
+- 安全协议
+   * [SSL/TLS协议]()
+   * [国密SSL VPN协议](http://gmssl.org/docs/sslvpn.html)
+   * [国密IPSec VPN协议](http://gmssl.org/docs/ipsecvpn.html)
+- 开发者
+   * [GmSSL编码风格 (Coding Style)](http://gmssl.org/docs/gmssl-coding-style.html)
+   * [开发路线 (Road Map)](http://gmssl.org/docs/roadmap.html)
+   * [开源许可证 (GmSSL Licenses)](http://gmssl.org/docs/licenses.html)
+- 标准与规范
+   * [中华人民共和国密码行业标准](http://gmssl.org/docs/)；
+   * [国密算法标识OID](http://gmssl.org/docs/oid.html)
