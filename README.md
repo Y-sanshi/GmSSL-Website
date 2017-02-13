@@ -86,7 +86,7 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
 
 密码算法
 
-* [SM1分组密码](sm1)
+* [SM1分组密码](http://gmssl.org/docs/sm1.html)
 * [SSF33分组密码](https://github.com/guanzhi/GmSSL/wiki/ssf33)
 * [SM2椭圆曲线公钥密码](https://github.com/guanzhi/GmSSL/wiki/sm2)
 * [SM3密码杂凑算法](https://github.com/guanzhi/GmSSL/wiki/sm3)
