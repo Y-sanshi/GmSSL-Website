@@ -1,10 +1,13 @@
 # GmSSL Java Wrapper
 
-GmSSL Java Wrapper是GmSSL密码库接口的Java语言封装，提供了包括随机数生成、对称加解密、哈希、消息认证码(MAC)、公钥加解密、数字签名、密钥交换等基础密码功能的Java语言接口，支持包括SM2/SM3/SM4/RSA/AES/3DES/MD5/SHA-1/SHA-2在内的GmSSL密码库的全部密码算法。GmSSL Java Wrapper是[GmSSL项目](http://gmssl.org)的子项目，用于支持Java和Android平台上的应用开发。
+[GmSSL Java Wrapper](https://github.com/guanzhi/GmSSL-Java-Wrapper)是GmSSL密码库接口的Java语言封装，提供了包括随机数生成、对称加解密、哈希、消息认证码(MAC)、公钥加解密、数字签名、密钥交换等基础密码功能的Java语言接口，支持包括SM2/SM3/SM4/RSA/AES/3DES/MD5/SHA-1/SHA-2在内的GmSSL密码库的全部密码算法。GmSSL Java Wrapper是[GmSSL项目](http://gmssl.org)的子项目，用于支持Java和Android平台上的应用开发。
 
 ## 接口说明
 
 GmSSL Java Wrapper的接口如下：
+
+```java
+public class GmSSL {
 
 	public native String getVersion(int type);
 	public native byte [] generateRandom(int length);
@@ -30,6 +33,12 @@ GmSSL Java Wrapper的接口如下：
 	public native String [] getDeriveKeyAlgorithms(boolean aliases);
 	public native byte [] deriveKey(String algor, int flag, int keyLength, byte [] peerPublicKey, byte [] privateKey);
 	public native String getErrorString();
+
+	static {
+		System.loadLibrary("gmssl");
+	}
+}
+```
 
 
 由于GmSSL Java Wrapper有可能和任意版本的GmSSL库链接在一起，应用程序在运行时获取GmSSL的功能信息。可以通过`getVersion()`接口获取GmSSL库的版本，如版本号、编译选项、配置文件路径以及ENGINE路径等信息，通过`getCiphers()`、`getDigests()`、`getMacs()`、`getSignAlgorithms()`、`getPublicKeyEncryptions()`和`getKeyDeriveAlgorithms()`获取当前GmSSL支持的算法，这些接口返回以`:`字符分隔的算法名称字符串，这些算法名称字符串可以用于密码操作接口的输入参数。在GmSSL中，部分算法有别名，通过`aliases`参数可以设定是否输出算法别名。

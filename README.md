@@ -2,7 +2,10 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
 
 ## 最新动态
 
-- 2017.01.18 更新了项目主页
+- 2017年2月12日 支持完整的密码库Java语言封装[GmSSL-Java-Wrapper](http://gmssl.org/docs/java-api.html)
+- 2017年1月18日 更新了项目主页
+
+[更多 ...](http://gmssl.org/docs/changelog.html)
 
 ## 国密算法
 
