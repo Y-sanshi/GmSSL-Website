@@ -110,5 +110,5 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
 
 标准与规范：
 
-* 标准规范：[中华人民共和国密码行业标准(共44项)](http://gmssl.org/docs/)；
+* [中华人民共和国密码行业标准](http://gmssl.org/docs/)；
 * [国密算法标识OID](http://gmssl.org/docs/oid.html)
