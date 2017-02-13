@@ -95,7 +95,7 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
 * [ZUC序列密码](https://github.com/guanzhi/GmSSL/blob/develop/doc/gmssl/zuc.md)
 * [CPK组合公钥密码](https://github.com/guanzhi/GmSSL/wiki/cpk)
 * [BF-IBE (Boneh-Franklin Identity-Based Encryption)](https://github.com/guanzhi/GmSSL/wiki/bfibe)
-* [BB~1~-IBE (Boneh-Boyen Identity-Based Encryption)](https://github.com/guanzhi/GmSSL/wiki/bb1-ibe)
+* [BB<sub>1</sub>-IBE (Boneh-Boyen Identity-Based Encryption)](https://github.com/guanzhi/GmSSL/wiki/bb1-ibe)
 
 安全协议：
 
