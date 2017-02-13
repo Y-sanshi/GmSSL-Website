@@ -79,10 +79,10 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
 
 用户手册：
 
-* [编译与安装](http://gmssl.org/docs/install.html)；
-* [命令行工具手册](http://gmssl.org/docs/commands.html)；
-* [GmSSL EVP API](http://gmssl.org/docs/evp-api.html)；
-* [GmSSL Java API](http://gmssl.org/docs/java-api.html)；
+* [编译与安装](http://gmssl.org/docs/install.html)
+* [命令行工具手册](http://gmssl.org/docs/commands.html)
+* [GmSSL EVP API](http://gmssl.org/docs/evp-api.html)
+* [GmSSL Java API](http://gmssl.org/docs/java-api.html)
 
 密码算法
 
@@ -99,14 +99,15 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
 
 安全协议：
 
-* [SSL/TLS协议]()、
-* [国密SSL VPN协议](http://gmssl.org/docs/sslvpn.html)；
-* [国密IPSec VPN协议](http://gmssl.org/docs/ipsecvpn.html)；
+* [SSL/TLS协议]()
+* [国密SSL VPN协议](http://gmssl.org/docs/sslvpn.html)
+* [国密IPSec VPN协议](http://gmssl.org/docs/ipsecvpn.html)
 
 开发者：
 
-* [GmSSL编码风格 (Coding Style)](http://gmssl.org/docs/gmssl-coding-style.html)；
-* [开发路线 (Road Map)](http://gmssl.org/docs/roadmap.html)；
+* [GmSSL编码风格 (Coding Style)](http://gmssl.org/docs/gmssl-coding-style.html)
+* [开发路线 (Road Map)](http://gmssl.org/docs/roadmap.html)
+* [开源许可证 (GmSSL Licenses)](http://gmssl.org/docs/licenses.html)
 
 标准与规范：
 
