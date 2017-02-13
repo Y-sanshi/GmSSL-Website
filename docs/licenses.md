@@ -1,3 +1,5 @@
+# 开源许可证
+
 为了便于商业软件采用GmSSL，GmSSL在2015-10-25的更新明确了版权信息。GmSSL保持了和OpenSSL相同的许可证，该许可证的主要特点是：
 
 1. 对商业软件或闭源软件友好，包含该项目源代码的软件可以选择闭源，只需在软件中声明利用了该项目。对于包含GmSSL的软件来说来说需要在“关于”或者“帮助”菜单项中包含“This product includes software developed by the GmSSL Project (http://gmssl.org/)” 字样。
