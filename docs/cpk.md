@@ -1,6 +1,2 @@
-todo
+# Combined Public Key (CPK)
 
-
-$$
-y^2 = x^3 + ax + b
-$$
