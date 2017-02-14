@@ -97,6 +97,11 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
    * [CPK组合公钥密码](http://gmssl.org/docs/cpk.html)
    * [BF-IBE (Boneh-Franklin Identity-Based Encryption)](http://gmssl.org/docs/bfibe.html)
    * [BB<sub>1</sub>-IBE (Boneh-Boyen Identity-Based Encryption)](http://gmssl.org/docs/bb1ibe.html)
+- 密码硬件
+   * [密码硬件支持](http://gmssl.org/docs/crypto-devices.html)
+   * [国密SKF密码硬件](http://gmssl.org/docs/skf.html)
+   * [国密SDF密码硬件](http://gmssl.org/docs/sdf.html)
+   * [密钥管理服务](http://gmssl.org/docs/keyservice.html)
 - 安全协议
    * [SSL/TLS协议](http://gmssl.org/docs/ssl.html)
    * [国密SSL VPN协议](http://gmssl.org/docs/sslvpn.html)
