@@ -1,5 +1,22 @@
 # 编译与安装
 
+## GmSSL-2.x
+
+```sh
+./config
+make
+make test
+sudo make install
+```
+
+如果某个模块无法通过编译，可以通过条件编译选项不编译该模块，如
+
+```sh
+./config no-sm9
+```
+
+
+## GmSSL-1.x
 
 ### 在Mac下编译和安装
 
