@@ -16,7 +16,7 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
 
 快速上手指南介绍GmSSL的编译、安装和`gmssl`命令行工具的基本指令。
 
-1. 下载源代码，解压缩至当前工作目录
+1. 下载源代码[gmssl-1.3.0](https://github.com/guanzhi/GmSSL/archive/gmssl-1.3.0.tar.gz)，解压缩至当前工作目录
 
    ```sh
    $ tar xzvf gmssl-<version>.tar.gz
