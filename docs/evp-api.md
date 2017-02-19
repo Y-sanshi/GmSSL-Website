@@ -33,7 +33,7 @@ case EVP_PKEY_DSA:
 	break;
 
 case EVP_PKEY_DH:
-	/ 设置一个2048位的素数 */
+	/* 设置一个2048位的素数 */
 	if(!EVP_PKEY_CTX_set_dh_paramgen_prime_len(pctx, 2048)) goto err;
 }
 
