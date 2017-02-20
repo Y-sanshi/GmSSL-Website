@@ -1712,7 +1712,7 @@ EVP_CIPHER_CTX_free(ctx);
 
 return ciphertext_len;
 }
-
+```
 ###打开包络
 使用EVP_Open *函数集在以下步骤中打开一个包络：
 
@@ -1762,7 +1762,7 @@ EVP_CIPHER_CTX_free(ctx);
 
 return plaintext_len;
 }
-
+```
 
 ##Libcrypto接口
 OpenSSL提供了两个主要的函数库：libssl和libcrypto。libcrypto库提供了基本的关于密码学的一些常规函数，并且被libssl库所调用。但是你也可以仅使用libcrypto库而不使用libssl库。	
@@ -1842,6 +1842,7 @@ if (some_verify_function())
 ```c
  if (1 != some_openssl_function())
  /* handle error */
+ ```
 
 参考Libcrary Errors页面得到更多的关于OpenSSL错误的信息
 
