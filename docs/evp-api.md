@@ -972,7 +972,918 @@ HostnameValidationResult validate_hostname(const char *hostname, const X509 *ser
     return result;
 }
 ```
+##EVP
 
+
+EVP函数提供了一个高级的接口给OpenSSL密码函数。
+
+它们提供了以下的特征
+
+* 一个独立的始终如一的接口，不管是不是优先的算法或者模式
+* 支持一个广泛范围内的算法
+* 加密和解密都使用对称和不对称的算法
+* 签署/验证
+* 关键推导
+* 安全的哈希函数
+* 信息验证码
+* 支持外部加密引擎
+
+###处理EVP_PKEYs
+
+EVP_PKEY对象被用于存储一个公共的密钥以及（可选择的）一个私密的密钥，以及一些关联的算法和参数。它们也能够存储对称的MAC密钥。
+
+下列的EVP_PKEY类型是支持的
+
+* EVP_PKEY_EC:椭圆曲线密钥（对ECDSA（椭圆曲线密钥算法）和ECDH（椭圆曲线密钥交换体制））支持签名/验证操作，以及密码的推导。
+* EVP_PKEY_RSA：RSA支持签名/验证，以及加密解密。
+* EVP_PKEY_DH:Diffie Hellman密钥交换体系，用于密钥推导
+* EVP_PKEY_DSA:DSA密码用于签名/验证
+* EVP_PKEY_HMAC：HMAC密码用于收集信息认证码
+* EVP_PKEY_CMAC:CMAC密码用于收集信息验证码
+
+*注意*：DSA处理改变了SSL/TLS密码适合OpenSSL1.1.0. 具体细节请看DSA with OpenSSL-1.1在邮件列表上。参考手册:`EVP_PKEY_new(3)`手册得到更多信息关于创建一个`EVP_PKEY` 对象，以及`Manual:EVP_PKEY_set1_RSA(3)`页面得到关于怎么初始化`EVP_PKEY`的信息。
+
+参考EVP密钥和参数提取`EVP_Key_and_Parameter_Generation)`得到关于提取新密钥以及相关的参数的信息。
+
+###处理算法和模板
+
+密码以及电文破译算法是由一个唯一的`EVP_CIPHER`以及`EVP_MD`对象各自确认的。你并不需要自己创立它们，而是使用内部的函数来得到一个你想使用的算法。有关密码和信息摘要的完整列表，请参阅**evp.h**头文件。从**evp.h**中提取了一些EVP_CIPHER函数，如下所示：
+
+
+```c
+const EVP_CIPHER *EVP_aes_128_ctr(void);
+const EVP_CIPHER *EVP_aes_128_ccm(void);
+const EVP_CIPHER *EVP_aes_128_gcm(void);
+const EVP_CIPHER *EVP_aes_128_xts(void);
+const EVP_CIPHER *EVP_aes_192_ecb(void);
+const EVP_CIPHER *EVP_aes_192_cbc(void);
+
+这些密码都是AES(高级加密标准)算法的变体。有两种不同长度的密钥显示，分别用于128位密钥和192位密钥。还存在所示的各种不同的加密模式，即CTR，CCM，GCM，XTS，ECB和CBC。不是所有算法都支持所有加密模式，所以你要在**EVP.h**里面寻找你想要的特定组合。以下（编辑的）从**evp.h**的提取显示了一些示例消息摘要函数。
+
+
+```c
+const EVP_MD *EVP_md2(void);
+const EVP_MD *EVP_md4(void);
+const EVP_MD *EVP_md5(void);
+const EVP_MD *EVP_sha1(void);
+const EVP_MD *EVP_sha224(void);
+const EVP_MD *EVP_sha256(void);
+const EVP_MD *EVP_sha384(void);
+const EVP_MD *EVP_sha512(void);
+```
+从这些函数返回的对象是内置的，不需要在使用后“释放”。
+
+###加密操作 
+以下加密操作是可能的。 有关详细信息，请参阅相关页面
+
+* 对称加密和解密
+* 经过身份的加密和解密
+* 包络的不对称加密和解密
+* 签名和验证（包括消息验证码）
+* 消息摘要
+* 主要协议
+* 键和参数生成
+* 'EVP_Key_and_Parameter_Generation)'
+
+
+##EVP对称加密和解密
+OpenSSL中的libcrypto库提供了在各种算法和模式中执行对称加密和解密操作的函数。本页向您介绍执行简单加密和相应解密操作的基础知识。
+
+为了执行加密/解密，您需要知道：
+
+
+
+* 你的算法
+* 你的模式
+* 你的密钥
+* 你的初始化向量（IV）
+
+这个页面假设你知道这些东西是什么意思。 如果不这样，请参阅加密基本知识
+###建立
+下面的代码建立了程序。在这个例子中，我们将采用一个简单的信息（The quick brown fox jumps over the lazy dog），然后使用预定义的密钥和初始化向量（IV）对它进行加密。在这个例子中，密钥和IV已经被硬编码 - 在真实的情况下，你永远不会这样做！在加密之后，我们将解密所产生的密文。然后（希望）得到我们一开始的信息。该程序需要定义两个函数：“encrypt”和“decrypt”。 我们将在页面的后面进一步定义。
+
+
+```c
+ #include <openssl/conf.h>
+ #include <openssl/evp.h>
+ #include <openssl/err.h>
+ #include <string.h>
+
+ int main (void)
+{
+/* Set up the key and iv. Do I need to say to not hard code these in a
+ * real application? :-)
+ */
+
+ /* A 256 bit key */
+ unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
+
+ /* A 128 bit IV */
+ unsigned char *iv = (unsigned char *)"01234567890123456";
+
+ /* Message to be encrypted */
+ unsigned char *plaintext =(unsigned char *)"The quick brown fox jumps over the lazy dog";
+
+ /* Buffer for ciphertext. Ensure the buffer is long enough for the
+  * ciphertext which may be longer than the plaintext, dependant on the
+  * algorithm and mode
+  */
+  unsigned char ciphertext[128];
+
+ /* Buffer for the decrypted text */
+ unsigned char decryptedtext[128];
+
+ int decryptedtext_len, ciphertext_len;
+
+/* Initialise the library */
+ERR_load_crypto_strings();
+OpenSSL_add_all_algorithms();
+OPENSSL_config(NULL);
+
+/* Encrypt the plaintext */
+ciphertext_len = encrypt (plaintext, strlen ((char *)plaintext), key, iv,
+                      	      ciphertext);
+
+/* Do something useful with the ciphertext here */
+printf("Ciphertext is:\n");
+BIO_dump_fp (stdout, (const char *)ciphertext, ciphertext_len);
+
+/* Decrypt the ciphertext */
+decryptedtext_len = decrypt(ciphertext, ciphertext_len, key, iv,
+decryptedtext);
+
+/* Add a NULL terminator. We are expecting printable text */
+decryptedtext[decryptedtext_len] = '\0';
+
+/* Show the decrypted text */
+printf("Decrypted text is:\n");
+printf("%s\n", decryptedtext);
+
+/* Clean up */
+EVP_cleanup();
+ERR_free_strings();
+
+return 0;
+}
+```
+
+这个程序设置了256位的密钥和128位的初始化向量。这适用于我们将在CBC模式下进行的256位AES加密。确保你使用正确的密钥和IV长度为你选择的密码，否则会出错！
+
+我们还设置了缓冲区来放置密文。特别重要的是确保此缓冲区对于预期的密文足够大，否则您可能会看到程序崩溃（或可能在您的代码中引入安全漏洞）。注意：密文可能比明文长（例如，如果正在使用填充）。
+
+我们还需要一个帮助函数来处理任何错误。 这将简单地将任何错误消息从OpenSSL错误堆栈转储到屏幕，然后中止程序。
+
+
+```c
+void handleErrors(void)
+{
+ERR_print_errors_fp(stderr);
+abort();
+}
+```
+###加密信息
+我们已经建立了程序，需要定义encrypt函数。这个函数将采用明文，明文的长度，要使用的密钥和IV作为参数。 我们还将用一个缓冲区来放置密文（我们假设它足够长），并且将返回我们已经写入的密文的长度。
+
+加密包括以下阶段
+
+* 建立内容
+* 加密操作的初始化
+* 提供要加密的明文
+* 完成加密
+
+在初始化期间，我们将提供一个`EVP_CIPHER`对象。 在这种情况下，我们使用`EVP_aes_256_cbc（）`，它在CBC模式下使用256位密钥的AES算法。 有关更多详细信息，请参阅“EVP＃使用算法和模式”。
+
+
+```c
+int encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
+unsigned char *iv, unsigned char *ciphertext)
+{
+EVP_CIPHER_CTX *ctx;
+
+int len;
+
+int ciphertext_len;
+
+/* Create and initialise the context */
+if(!(ctx = EVP_CIPHER_CTX_new())) handleErrors();
+
+/* Initialise the encryption operation. IMPORTANT - ensure you use a key
+* and IV size appropriate for your cipher
+* In this example we are using 256 bit AES (i.e. a 256 bit key). The
+* IV size for *most* modes is the same as the block size. For AES this
+* is 128 bits */
+if(1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))
+handleErrors();
+
+/* Provide the message to be encrypted, and obtain the encrypted output.
+* EVP_EncryptUpdate can be called multiple times if necessary
+*/
+if(1 != EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, plaintext_len))
+handleErrors();
+ciphertext_len = len;
+
+/* Finalise the encryption. Further ciphertext bytes may be written at
+* this stage.
+*/
+if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) handleErrors();
+ciphertext_len += len;
+
+/* Clean up */
+EVP_CIPHER_CTX_free(ctx);
+
+return ciphertext_len;
+}
+```
+
+###解密信息
+
+最后，我们需要定义“decrypt”操作。 这与加密非常相似，包括以下阶段：
+
+* 建立内容
+* 初始化解密操作
+* 提供要解密的密文
+* 完成解密
+
+再次通过参数，我们将接收要解密的密文，密文的长度，密钥和IV。 我们还将收到一个缓冲区，将解密的文本放入，并返回我们发现的明文的长度。
+
+注意，我们已经得到了密文的长度。 这是必需的，因为你不能使用诸如“strlen”这样的数据 - 它是二进制！ 同样，即使在这个例子中我们的纯文本是ASCII文本，OpenSSL也不知道。 尽管名称明文可以是二进制数据，因此没有NULL终止符将放在末尾（除非你加密NULL当然）
+
+解密函数
+
+
+```c
+int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
+unsigned char *iv, unsigned char *plaintext)
+{
+EVP_CIPHER_CTX *ctx;
+
+int len;
+
+int plaintext_len;
+
+/* Create and initialise the context */
+if(!(ctx = EVP_CIPHER_CTX_new())) handleErrors();
+
+/* Initialise the decryption operation. IMPORTANT - ensure you use a key
+* and IV size appropriate for your cipher
+* In this example we are using 256 bit AES (i.e. a 256 bit key). The
+* IV size for *most* modes is the same as the block size. For AES this
+* is 128 bits */
+if(1 != EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))
+handleErrors();
+
+/* Provide the message to be decrypted, and obtain the plaintext output.
+* EVP_DecryptUpdate can be called multiple times if necessary
+*/
+if(1 != EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, ciphertext_len))
+handleErrors();
+plaintext_len = len;
+
+/* Finalise the decryption. Further plaintext bytes may be written at
+* this stage.
+*/
+if(1 != EVP_DecryptFinal_ex(ctx, plaintext + len, &len)) handleErrors();
+plaintext_len += len;
+
+/* Clean up */
+EVP_CIPHER_CTX_free(ctx);
+
+return plaintext_len;
+}
+```
+###密文输出
+
+如果一切顺利，你应该得到如下输出：
+```c
+Ciphertext is:
+0000 - e0 6f 63 a7 11 e8 b7 aa-9f 94 40 10 7d 46 80 a1   .oc.......@.}F..
+0010 - 17 99 43 80 ea 31 d2 a2-99 b9 53 02 d4 39 b9 70   ..C..1....S..9.p
+0020 - 2c 8e 65 a9 92 36 ec 92-07 04 91 5c f1 a9 8a 44   ,.e..6.....\...D
+Decrypted text is:
+The quick brown fox jumps over the lazy dog
+```
+
+有关对称加密和解密操作的更多详细信息，请参阅OpenSSL文档手册：`EVP_EncryptInit（3）`
+
+##填充
+默认情况下，OpenSSL使用PKCS填充。 如果您使用的模式允许您更改填充，则可以使用`EVP_CIPHER_CTX_set_padding`更改它。手册页`EVP_CIPHER_CTX_set_padding（）`启用或禁用填充。 默认情况下，使用标准块填充填充加密操作，并在解密时检查和删除填充。 如果填充参数为零，则不执行填充，则加密或解密的数据总量必须是块大小的倍数，否则将发生错误...
+
+PKCS填充通过添加值为n的n个填充字节来使加密数据的总长度成为块大小的倍数。 填充总是添加，所以如果数据已经是块大小的倍数，n将等于块大小。 例如，如果块大小是8并且11字节将被加密，则将添加值5的5个填充字节...
+
+如果禁用填充，则解密操作将仅在解密的数据的总量是块大小的倍数时才会成功....
+###C++程序
+
+有时有如何使用来自C ++程序的EVP接口的问题。 一般来说，使用来自C ++程序的EVP接口与从C程序使用它们相同。
+
+您可以下载一个使用EVP对称加密和C ++ 11称为`evp_encrypt.cxx`的示例程序。 该示例使用自定义分配器来归零内存，C ++智能指针来管理资源，并使用`basic_string`和自定义分配器提供了一个`secure_string`。 你需要使用g ++ -std = c ++ 11 ...来编译它，因为`std :: unique_ptr`。
+
+您还应确保使用-fexception配置构建，以确保C++异常按预期通过C代码传递。 你应该避免其他标志，如-fno-exceptions和-fno-rtti。
+
+程序主要使用AES-256在CBC模式下简单地加密和解密字符串：
+
+
+```c
+typedef unsigned char byte;
+typedef std::basic_string<char, std::char_traits<char>, zallocator<char> > secure_string;
+using EVP_CIPHER_CTX_ptr = std::unique_ptr<EVP_CIPHER_CTX, decltype(&::EVP_CIPHER_CTX_free)>;
+...
+
+int main(int argc, char* argv[])
+{
+// Load the necessary cipher
+EVP_add_cipher(EVP_aes_256_cbc());
+
+// plaintext, ciphertext, recovered text
+secure_string ptext = "Yoda said, Do or do not. There is no try.";
+secure_string ctext, rtext;
+
+byte key[KEY_SIZE], iv[BLOCK_SIZE];
+gen_params(key, iv);
+  
+aes_encrypt(key, iv, ptext, ctext);
+aes_decrypt(key, iv, ctext, rtext);
+    
+OPENSSL_cleanse(key, KEY_SIZE);
+OPENSSL_cleanse(iv, BLOCK_SIZE);
+
+std::cout << "Original message:\n" << ptext << std::endl;
+std::cout << "Recovered message:\n" << rtext << std::endl;
+
+return 0;
+}
+```
+
+加密程序如下。 解密程序类似：
+
+
+```c
+void aes_encrypt(const byte key[KEY_SIZE], const byte iv[BLOCK_SIZE], const secure_string& ptext, secure_string& ctext)
+{
+EVP_CIPHER_CTX_ptr ctx(EVP_CIPHER_CTX_new(), ::EVP_CIPHER_CTX_free);
+int rc = EVP_EncryptInit_ex(ctx.get(), EVP_aes_256_cbc(), NULL, key, iv);
+if (rc != 1)
+throw std::runtime_error("EVP_EncryptInit_ex failed");
+
+// Cipher text expands upto BLOCK_SIZE
+ctext.resize(ptext.size()+BLOCK_SIZE);
+int out_len1 = (int)ctext.size();
+
+rc = EVP_EncryptUpdate(ctx.get(), (byte*)&ctext[0], &out_len1, (const byte*)&ptext[0], (int)ptext.size());
+if (rc != 1)
+throw std::runtime_error("EVP_EncryptUpdate failed");
+  
+int out_len2 = (int)ctext.size() - out_len1;
+rc = EVP_EncryptFinal_ex(ctx.get(), (byte*)&ctext[0]+out_len1, &out_len2);
+if (rc != 1)
+throw std::runtime_error("EVP_EncryptFinal_ex failed");
+
+// Set cipher text size now that we know it
+ctext.resize(out_len1 + out_len2);
+}
+```
+
+###注意一些不寻常的模式
+这里值得一提的是XTS模式（例如`EVP_aes_256_xts（）`）。 除了在IV参数中提供“tweak”之外，它的工作方式与上面所示的完全相同。 另一个“困扰”是XTS模式期望的密钥是正常的两倍。 因此，`EVP_aes_256_xts（）`期望一个512位长的密钥。
+认证加密模式（GCM）的工作方式与上述方式基本相同，但需要一些特殊处理。 有关更多详细信息，请参阅“EVP身份验证加密和解密”。
+##EVP认证加密和解密
+EVP接口支持执行验证加密和解密的能力，以及将未加密的关联数据附加到消息的选项。 这种带有关联数据（AEAD）方案的认证加密通过加密数据来提供机密性，并且还通过在加密数据上创建MAC标签来提供真实性保证。 MAC标签将确保数据不会在传输和存储期间意外更改或恶意篡改。
+
+有多种AEAD操作模式。 模式包括EAX，CCM和GCM模式。 使用AEAD模式几乎等同于使用诸如CBC，CFB和OFB模式的标准对称加密模式。
+
+与标准对称加密一样，您需要了解以下内容：
+
+* 算法（现在只支持AES）
+* 模式（现在只支持CCM和GCM）
+* 密钥
+* 初始化向量（IV）
+
+此外，您可以（可选）提供一些额外的已验证数据（AAD）。 AAD数据未加密，并且通常以明文连同密文一起传递给接收者。 AAD的示例是IP报头中与IPsec一起使用的IP地址和端口号。
+
+加密操作的输出将是密文和标签。 随后在解密操作期间使用标签以确保密文和AAD未被篡改。
+
+OpenSSL手册介绍了GCM和CCM模式的用法：`Manual：EVP_EncryptInit（3）#GCM_Mode`。
+
+###使用GCM模式的已验证加密
+
+以与在此所述的对称加密大致相同的方式执行加密。 主要区别是：
+
+* 您可以选择使用EVP_CIPHER_CTX_ctrl传递IV长度
+* AAD数据在对EVP_EncryptUpdate的零个或多个调用中传递，输出缓冲区设置为NULL
+* 在EVP_EncryptFinal_ex调用之后，对EVP_CIPHER_CTX_ctrl的新调用将检索标记
+
+请参考下面的代码示例：
+
+
+```c
+int encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *aad,
+int aad_len, unsigned char *key, unsigned char *iv,
+unsigned char *ciphertext, unsigned char *tag)
+{
+EVP_CIPHER_CTX *ctx;
+
+int len;
+
+int ciphertext_len;
+
+
+/* Create and initialise the context */
+if(!(ctx = EVP_CIPHER_CTX_new())) handleErrors();
+
+/* Initialise the encryption operation. */
+if(1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
+handleErrors();
+
+/* Set IV length if default 12 bytes (96 bits) is not appropriate */
+if(1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 16, NULL))
+handleErrors();
+
+/* Initialise key and IV */
+if(1 != EVP_EncryptInit_ex(ctx, NULL, NULL, key, iv)) handleErrors();
+
+/* Provide any AAD data. This can be called zero or more times as
+ * required
+ */
+if(1 != EVP_EncryptUpdate(ctx, NULL, &len, aad, aad_len))
+handleErrors();
+
+/* Provide the message to be encrypted, and obtain the encrypted output.
+ * EVP_EncryptUpdate can be called multiple times if necessary
+ */
+if(1 != EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, plaintext_len))
+handleErrors();
+ciphertext_len = len;
+
+/* Finalise the encryption. Normally ciphertext bytes may be written at
+ * this stage, but this does not occur in GCM mode
+ */
+if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) handleErrors();
+ciphertext_len += len;
+
+/* Get the tag */
+if(1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, tag))
+handleErrors();
+	
+/* Clean up */
+EVP_CIPHER_CTX_free(ctx);
+	
+return ciphertext_len;
+}
+```
+###使用GCM模式的已验证解密
+
+同样，解密操作与如这里所描述的正常对称解密大致相同。 主要区别是：
+
+* 您可以选择使用`EVP_CIPHER_CTX_ctrl`传递IV长度
+* AAD数据在对`EVP_DecryptUpdate`的零个或多个调用中传递，输出缓冲区设置为NULL
+* 在`EVP_DecryptFinal_ex`调用之前，对`EVP_CIPHER_CTX_ctrl`的新调用提供了标记
+*` EVP_DecryptFinal_ex`的非正值返回值应被视为认证密文和/或AAD的失败。 它不一定表示更严重的错误。
+
+参考下面代码示例
+
+
+```c
+int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *aad,int aad_len, unsigned char *tag, unsigned char *key, unsigned char *iv,
+unsigned char *plaintext)
+{
+EVP_CIPHER_CTX *ctx;
+int len;
+int plaintext_len;
+int ret;
+
+/* Create and initialise the context */
+if(!(ctx = EVP_CIPHER_CTX_new())) handleErrors();
+
+/* Initialise the decryption operation. */
+if(!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
+handleErrors();
+
+/* Set IV length. Not necessary if this is 12 bytes (96 bits) */
+if(!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 16, NULL))
+handleErrors();
+
+/* Initialise key and IV */
+if(!EVP_DecryptInit_ex(ctx, NULL, NULL, key, iv)) handleErrors();
+
+/* Provide any AAD data. This can be called zero or more times as
+* required
+*/
+if(!EVP_DecryptUpdate(ctx, NULL, &len, aad, aad_len))
+handleErrors();
+
+/* Provide the message to be decrypted, and obtain the plaintext output.
+* EVP_DecryptUpdate can be called multiple times if necessary
+*/
+if(!EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, ciphertext_len))
+handleErrors();
+plaintext_len = len;
+	
+/* Set expected tag value. Works in OpenSSL 1.0.1d and later */
+if(!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, tag))
+handleErrors();
+
+/* Finalise the decryption. A positive return value indicates success,
+ * anything else is a failure - the plaintext is not trustworthy.
+ */
+ret = EVP_DecryptFinal_ex(ctx, plaintext + len, &len);
+
+/* Clean up */
+EVP_CIPHER_CTX_free(ctx);
+
+if(ret > 0)
+{
+/* Success */
+plaintext_len += len;
+return plaintext_len;
+}
+else
+{
+/* Verify failed */
+return -1;
+}
+}
+```
+
+###使用CCM模式的已验证加密
+
+使用CCM模式加密与使用GCM加密非常相似，但需要记住一些其他事项。
+
+* 您只能对AAD调用EVP_EncryptUpdate一次，对纯文本调用一次。
+* 总明文长度必须传递给EVP_EncryptUpdate（仅当传递AAD时才需要）
+* 可选地，标签和IV长度也可以被传递。 如果不是，则使用默认值（AES标记为12字节，AES IV为7字节）
+
+示例代码：
+
+
+```c
+int encryptccm(unsigned char *plaintext, int plaintext_len, unsigned char *aad,int aad_len, unsigned char *key, unsigned char *iv,
+unsigned char *ciphertext, unsigned char *tag)
+{
+EVP_CIPHER_CTX *ctx;
+
+int len;
+
+int ciphertext_len;
+
+
+/* Create and initialise the context */
+if(!(ctx = EVP_CIPHER_CTX_new())) handleErrors();
+
+/* Initialise the encryption operation. */
+if(1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_ccm(), NULL, NULL, NULL))
+handleErrors();
+
+/* Setting IV len to 7. Not strictly necessary as this is the default
+ * but shown here for the purposes of this example */
+if(1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_CCM_SET_IVLEN, 7, NULL))
+handleErrors();
+
+/* Set tag length */
+EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_CCM_SET_TAG, 14, NULL);
+
+/* Initialise key and IV */
+if(1 != EVP_EncryptInit_ex(ctx, NULL, NULL, key, iv)) handleErrors();
+
+/* Provide the total plaintext length
+ */
+if(1 != EVP_EncryptUpdate(ctx, NULL, &len, NULL, plaintext_len))
+handleErrors();
+	
+/* Provide any AAD data. This can be called zero or one times as
+* required
+*/
+if(1 != EVP_EncryptUpdate(ctx, NULL, &len, aad, aad_len))
+handleErrors();
+
+/* Provide the message to be encrypted, and obtain the encrypted output.
+* EVP_EncryptUpdate can only be called once for this
+*/
+if(1 != EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, 	plaintext_len))
+handleErrors();
+ciphertext_len = len;
+
+/* Finalise the encryption. Normally ciphertext bytes may be written at
+ * this stage, but this does not occur in CCM mode
+ */
+if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) handleErrors();
+ciphertext_len += len;
+
+/* Get the tag */
+if(1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_CCM_GET_TAG, 14, tag))
+handleErrors();
+
+/* Clean up */
+EVP_CIPHER_CTX_free(ctx);
+
+return ciphertext_len;
+}
+```
+###使用CCM模式的已认证解密
+
+使用CCM模式的解密与使用GCM的解密非常相同，但需要考虑一些其他事项。
+
+* 您只能对AAD调用EVP_EncryptUpdate一次，对纯文本调用一次。
+* 总明文长度必须传递给EVP_EncryptUpdate（仅当传递AAD时才需要）
+* 可选地，标签和IV长度也可以被传递。 如果不是，则使用默认值（AES标记为12字节，AES IV为7字节）
+* 标签验证在调用最终EVP_ DecryptUpdate时执行，并且由返回值反映：没有调用EVP_DecryptFinal。
+
+示例代码：
+
+
+```c
+int decryptccm(unsigned char *ciphertext, int ciphertext_len, unsigned char *aad,int aad_len, unsigned char *tag, unsigned char *key, unsigned char *iv,
+unsigned char *plaintext)
+{
+EVP_CIPHER_CTX *ctx;
+int len;
+int plaintext_len;
+int ret;
+
+/* Create and initialise the context */
+if(!(ctx = EVP_CIPHER_CTX_new())) handleErrors();
+
+/* Initialise the decryption operation. */
+if(1 != EVP_DecryptInit_ex(ctx, EVP_aes_256_ccm(), NULL, NULL, NULL))
+handleErrors();
+
+/* Setting IV len to 7. Not strictly necessary as this is the default
+* but shown here for the purposes of this example */
+if(1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_CCM_SET_IVLEN, 7, NULL))
+handleErrors();
+
+/* Set expected tag value. */
+if(1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_CCM_SET_TAG, 14, tag))
+handleErrors();
+
+/* Initialise key and IV */
+if(1 != EVP_DecryptInit_ex(ctx, NULL, NULL, key, iv)) handleErrors();
+
+
+/* Provide the total ciphertext length
+ */
+if(1 != EVP_DecryptUpdate(ctx, NULL, &len, NULL, ciphertext_len))
+handleErrors();
+
+/* Provide any AAD data. This can be called zero or more times as
+ * required
+ */
+if(1 != EVP_DecryptUpdate(ctx, NULL, &len, aad, aad_len))
+handleErrors();
+
+/* Provide the message to be decrypted, and obtain the plaintext output.
+ * EVP_DecryptUpdate can be called multiple times if necessary
+ */
+ret = EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, 	ciphertext_len);
+
+plaintext_len = len;
+
+/* Clean up */
+EVP_CIPHER_CTX_free(ctx);
+	
+if(ret > 0)
+{
+/* Success */
+return plaintext_len;
+}
+else
+{
+/* Verify failed */
+return -1;
+}
+}
+```
+###AES / GCM中的潜在问题
+当认证标记大小不是块大小的倍数时，认证加密接口的早期版本需要使用0大小的数组（而不是NULL数组）来获得正确的认证标记（例如，认证标记大小为20 字节）。 有关问题和解决方法的更多信息，请参阅Issue #2859: Possible bug in AES GCM mode and Possible bug in GCM/GMAC with (just) AAD of size unequal to block size
+
+
+##EVP不对称加密和解密
+
+使用非对称密钥的加密和解密在计算上是昂贵的。 通常，消息不是使用这样的密钥直接加密，而是使用对称的“会话”密钥加密。 然后，该密钥本身随后使用公钥加密。 在OpenSSL中，此组合称为包络。 还可以用多个公钥加密会话密钥。 这样，消息可以被发送到多个不同的接收者（对于每个使用的公共密钥一个）。 会话密钥对于每个收件人是相同的。
+
+用于处理包络的OpenSSL手册页可以在这里找到：Manual:EVP_SealInit(3)和Manual:EVP_OpenInit(3)
+###密封包络
+
+包络使用EVP_Seal *函数集密封，操作由以下步骤组成：
+
+* 初始化上下文
+* 初始化密封操作，提供将使用的对称密码，以及用于加密会话密钥的公钥集合
+* 提供要加密的消息
+* 完成加密操作
+
+示例代码：
+
+
+```c
+int envelope_seal(EVP_PKEY **pub_key, unsigned char *plaintext, int plaintext_len,unsigned char **encrypted_key, int *encrypted_key_len, unsigned char *iv,unsigned char *ciphertext)
+{
+EVP_CIPHER_CTX *ctx;
+
+int ciphertext_len;
+
+int len;
+
+
+/* Create and initialise the context */
+if(!(ctx = EVP_CIPHER_CTX_new())) handleErrors();
+
+/* Initialise the envelope seal operation. This operation generates
+ * a key for the provided cipher, and then encrypts that key a number
+ * of times (one for each public key provided in the pub_key array). In
+ * this example the array size is just one. This operation also
+ * generates an IV and places it in iv. */
+if(1 != EVP_SealInit(ctx, EVP_aes_256_cbc(), encrypted_key,
+encrypted_key_len, iv, pub_key, 1))
+handleErrors();
+
+/* Provide the message to be encrypted, and obtain the encrypted output.
+* EVP_SealUpdate can be called multiple times if necessary
+ */
+if(1 != EVP_SealUpdate(ctx, ciphertext, &len, plaintext, plaintext_len))
+handleErrors();
+ciphertext_len = len;
+
+/* Finalise the encryption. Further ciphertext bytes may be written at
+ * this stage.
+ */
+if(1 != EVP_SealFinal(ctx, ciphertext + len, &len)) handleErrors();
+ciphertext_len += len;
+
+/* Clean up */
+EVP_CIPHER_CTX_free(ctx);
+
+return ciphertext_len;
+}
+```
+###打开包络
+使用EVP_Open *函数集在以下步骤中打开一个包络：
+
+* 初始化上下文
+* 初始化打开操作，提供已使用的对称密码，以及私钥解密会话密钥
+* 提供要使用会话密钥解密和解密的消息
+* 完成解密操作
+
+示例代码：
+
+
+```c
+int envelope_open(EVP_PKEY *priv_key, unsigned char *ciphertext, int ciphertext_len,unsigned char *encrypted_key, int encrypted_key_len, unsigned char *iv,unsigned char *plaintext)
+{
+EVP_CIPHER_CTX *ctx;
+
+int len;
+
+int plaintext_len;
+
+
+/* Create and initialise the context */
+if(!(ctx = EVP_CIPHER_CTX_new())) handleErrors();
+
+/* Initialise the decryption operation. The asymmetric private key is
+ * provided and priv_key, whilst the encrypted session key is held in
+ * encrypted_key */
+if(1 != EVP_OpenInit(ctx, EVP_aes_256_cbc(), encrypted_key,
+encrypted_key_len, iv, priv_key))
+handleErrors();
+
+/* Provide the message to be decrypted, and obtain the plaintext output.
+ * EVP_OpenUpdate can be called multiple times if necessary
+ */
+if(1 != EVP_OpenUpdate(ctx, plaintext, &len, ciphertext, ciphertext_len))
+handleErrors();
+plaintext_len = len;
+
+/* Finalise the decryption. Further plaintext bytes may be written at
+ * this stage.
+ */
+if(1 != EVP_OpenFinal(ctx, plaintext + len, &len)) handleErrors();
+plaintext_len += len;
+
+/* Clean up */
+EVP_CIPHER_CTX_free(ctx);
+
+return plaintext_len;
+}
+```
+
+##Libcrypto接口
+OpenSSL提供了两个主要的函数库：libssl和libcrypto。libcrypto库提供了基本的关于密码学的一些常规函数，并且被libssl库所调用。但是你也可以仅使用libcrypto库而不使用libssl库。	
+
+###开始   
+要使用libcrypto库，要将它放在开头位置  
+    
+
+```c                      
+ #include <openssl/conf.h>
+ #include <openssl/evp.h>
+ #include <openssl/err.h>
+
+ int main(int arc, char *argv[])
+{ 
+/* Load the human readable error strings for libcrypto */
+ERR_load_crypto_strings();
+
+/* Load all digest and cipher algorithms */
+OpenSSL_add_all_algorithms();
+
+/* Load config file, and other important initialisation */
+OPENSSL_config(NULL);
+
+/* ... Do some crypto stuff here ... */
+
+/* Clean up */
+
+/* Removes all digests and ciphers */
+EVP_cleanup();
+
+/* if you omit the next, a small leak may be left when you make use of the BIO (low level API) for e.g. base64 transformations */
+CRYPTO_cleanup_all_ex_data();
+
+/* Remove error strings */
+ERR_free_strings();
+
+return 0;
+}
+```
+###高级与低级接口
+                                                                    
+	
+对于大多数对Libcrypto库的使用，使用者需要用高级的接口来进行加密解密的操作。它被称为EVP接口（Envelop的简称）。这个接口提供了一系列的功能包括加密解密（对称与非对称),签名与验证，也集合了一些哈希和加密哈希函数的代码，提供算法和模板。使用高级的接口意味着很多关于密码的复杂操作是不可见的。提供了一个单独不变的接口。如果你需要改变你的代码，比如另使用一个算法，那么这是一个很小的改变如果你使用的是高级接口。除此之外，底层的事务比如填充以及加密都有给你准备好模板。
+
+参考EVP页面得到更多的关于高级接口的信息。
+
+除了高级接口，OpenSSL还提供了低级的接口来直接使用个别的算法。这些低级的接口并不推荐给新手使用者，但是提供了可控的范围当只使用高级接口不太合适的时候。注意当你使用FIPS模式时很多低级接口并不可用。
+
+###错误控制
+大多数OpenSSL的功能函数会返回一个整数来表明成功或者失败。比如一个函数会返回1表示成功，0表示失败。所有的返回都必须视情况检查和控制。
+
+普遍的是像下面的方式来控制错误。
+
+
+```c
+if(1 != EVP_xxx()) goto err;
+if(1 != EVP_yyy()) goto err;
+
+/* ... do some stuff ... */
+
+err:
+ERR_print_errors_fp(stderr);
+```
+注意并不是所有的libcrypto函数会返回0表示失败1表示成功。有些异常会绊倒粗心的程序员。例如：你想要检查一个签名是否正确通过函数返回1表示正确，0表示错误，-1表示一些坏事情发生了，像存储分配错误。所以如果你做：
+
+
+```c
+if (some_verify_function())
+/* signature successful */
+```
+如果有人能够加入一个坏事情发生的情况你最后也把它当作坏的，即使它是好的。这个突然出现在库里面并且被安装在安全释放中。这时你要做的就是查看使用手册或者它的来源。
+
+避免被这种潜在的错误烦恼的一个方法是经常使用这个习惯去检查错误当调用一个OpenSSL函数时：
+
+
+```c
+ if (1 != some_openssl_function())
+ /* handle error */
+ ```
+
+参考Libcrary Errors页面得到更多的关于OpenSSL错误的信息
+
+###线程安全
+
+OpenSSL现在默认是线程不安全的。为了使它线程安全，调用者必须提供各种各样的信号来锁住，原子级的整数加减，以及线程ID测定（最后一个有合理的默认值）。这使得在一个多进程程序里使用OpenSSL变得困难：必须有一个进程提供返回信号。
+
+现在函数库使用OpenSSL保证线程安全唯一的适当的安全的方法是做下面的事情越早越好。
+
+未来我们希望OpenSSL能够自己线程安全来使用简单的线程在适当的地方。
+
+
+
+1. 检查信号锁是否设置，没有就设置。
+2. `CRYPTO_w_loc(CRYPTO_LOCK_DYNLOCK)`，设置剩下的信号锁 （`threadid`, `dynlock`, 和· `add_lock`），如果未设置，那么`CRYPTO_w_unlock(CRYPTO_LOCK_DYNLOCK)`;
+
+###进程安全
+   
+主要介绍的文章：Random fork-safety
+
+OpenSSL库的函数主要是异步信号不安全的，因此：
+
+* 不要从信号控制函数中调用OpenSSL函数
+* 不用在子进程中调用（exec或者_exit）
+* 不要调用OpenSSL从pthread_atfork() handlers 它本身必须是异步信号安全的。
+
+如果你有一个应用要使用OpenSSL在父进程和子进程（没有exec）并且没有正常的放大，那么你在使用其它RAND函数前需要在子进程中调用RAND_poll()
+
+###更多的函数库信息
+一些其它的网页覆盖了关于libcrypto具体的方面
+
+* 密码操作的高级接口
+* 密码算法
+* 输入输出系统
+* 椭圆曲线密码学
+
+
+
+
+
+                                                                  
 
 
 
