@@ -2,87 +2,6 @@
 
 EVP API是GmSSL密码服务接口。EVP API屏蔽了具体算法的细节，为上层应用提供统一、抽象的接口。该接口的头文件为`openssl/evp.h`。
 
-##Libcrypto接口
-OpenSSL提供了两个主要的函数库：libssl和libcrypto。libcrypto库提供了基本的关于密码学的一些常规函数，并且被libssl库所调用。但是也可以仅使用libcrypto库而不使用libssl库。
-
-###开始   
-要使用libcrypto库，要将它放在开头位置    
-
-```c                      
- #include <openssl/conf.h>
- #include <openssl/evp.h>
- #include <openssl/err.h>
-
- int main(int arc, char *argv[])
-{ 
-/* Load the human readable error strings for libcrypto */
-ERR_load_crypto_strings();
-
-/* Load all digest and cipher algorithms */
-OpenSSL_add_all_algorithms();
-
-/* Load config file, and other important initialisation */
-OPENSSL_config(NULL);
-
-/* ... Do some crypto stuff here ... */
-
-/* Clean up */
-
-/* Removes all digests and ciphers */
-EVP_cleanup();
-
-/* if you omit the next, a small leak may be left when you make use of the BIO (low level API) for e.g. base64 transformations */
-CRYPTO_cleanup_all_ex_data();
-
-/* Remove error strings */
-ERR_free_strings();
-
-return 0;
-}
-```
-
-
-###高级与低级接口
-
-对于大多数对Libcrypto库的使用，使用者需要用高级的接口来进行加密解密的操作。它被称为EVP接口（Envelop的简称）。这个接口提供了一系列的功能包括加密解密（对称与非对称),签名与验证，也集合了一些哈希和加密哈希函数的代码，提供算法和模板。使用高级的接口意味着很多关于密码的复杂操作是不可见的。提供了一个单独不变的接口。如果你需要改变你的代码，比如另使用一个算法，那么这是一个很小的改变如果你使用的是高级接口。除此之外，底层的事务比如填充以及加密都有给你准备好模板。
-
-除了高级接口，OpenSSL还提供了低级的接口来直接使用个别的算法。这些低级的接口并不推荐给新手使用者，但是提供了可控的范围当只使用高级接口不太合适的时候。注意当你使用FIPS模式时很多低级接口并不可用。
-
-###错误控制
-大多数OpenSSL的功能函数会返回一个整数来表明成功或者失败。比如一个函数会返回1表示成功，0表示失败。所有的返回都必须视情况检查和控制。
-
-普遍的是像下面的方式来控制错误。
-
-
-```c
-if(1 != EVP_xxx()) goto err;
-if(1 != EVP_yyy()) goto err;
-
-/* ... do some stuff ... */
-
-err:
-ERR_print_errors_fp(stderr);
-```
-注意并不是所有的libcrypto函数会返回0表示失败1表示成功。有些异常会绊倒粗心的程序员。例如：你想要检查一个签名是否正确通过函数返回1表示正确，0表示错误，-1表示一些坏事情发生了，像存储分配错误。所以如果你做：
-
-
-```c
-if (some_verify_function())
-/* signature successful */
-```
-如果有人能够加入一个坏事情发生的情况你最后也把它当作坏的，即使它是好的。这个突然出现在库里面并且被安装在安全释放中。这时你要做的就是查看使用手册或者它的来源。
-
-避免被这种潜在的错误烦恼的一个方法是经常使用这个习惯去检查错误当调用一个OpenSSL函数时：
-
-
-```c
- if (1 != some_openssl_function())
- /* handle error */
-```
-
-
-
-
 ## 公钥密码系统参数生成
 
 如果`EVP_PKEY`对象需要，EVP函数支持生成参数和密钥的功能。由于这些函数使用随机数，因此应当就像这里所讨论的确保随机数生成器采用适当的种子。
@@ -490,7 +409,7 @@ end:
 #### 签名
 
 下面的代码用HMAC对一个字符串进行签名。
-​	
+	
 ```c
 int sign_it(const byte* msg, size_t mlen, byte** sig, size_t* slen, EVP_PKEY* pkey)
 {
@@ -771,7 +690,7 @@ else
 ```
 
 注意MAC操作不支持验证操作。进行验证的MAC码是通过调用签名操作产生的，然后确认生成的MAC码和提供的MAC码是否完全相同。重要的是，当将所提供的MAC和预期的MAC进行比较时，无论是否匹配，比较都需要在常数时间内完成。不能做到上面这一点会把代码暴露在计时攻击的威胁下，这可以(例如)使攻击者伪造MAC码。要做到这一点，需要使用CRYPTO_memcmp函数，就像下面示例代码演示的那样。**不要**使用memcmp进行测试：
-​		
+		
 ```c
 if(!(mdctx = EVP_MD_CTX_create())) goto err;
 
@@ -797,6 +716,11 @@ else
 
 想获得有关验证函数的进一步信息，请参考手册：EVP_DigestVerifyInit(3)和手册：EVP_VerifyInit(3)。
 
+### 下载
+
+t-hmac.c.tar.gz - 使用HMAC通过`EVP_DigestSign*`和`EVP_DigestVerify*`函数对一个字符串进行签名和验证的示例程序
+
+t-rsa.c.tar.gz - 使用RSA通过`EVP_DigestSign*`和`EVP_DigestVerify*`函数对一个字符串进行签名和验证的示例程序
 
 ## 主机名验证
 
@@ -859,14 +783,14 @@ ssl-conservatory仓库展示了如何验证主机名。但是，ssl-conservatory
 
 ```c
 /* 来源：https://github.com/iSECPartners/ssl-conservatory */
-
+	
 /*
 版权所有(C)2012，iSEC合作伙伴。
-
+	
 在此授予任何获得本软件及相关文档文件(“软件”)副本的人免费许可，以无限制地处理本软件，包括但不限于使用，
 复制，修改，合并，发布，分发，再授权，并且/或者出售本软件的副本，并允许获得本软件的人员在符合以下条件
 的情况下：
-
+	
 上述版权声明和本许可声明应当包含在本软件的所以副本或者重要部分中。
 
 本软件按“原样”提供，不提供任何明示或者暗示的保证，包括但不限于适销性，适用于特定用途和非侵权的保证。任
@@ -1011,11 +935,9 @@ HostnameValidationResult validate_hostname(const char *hostname, const X509 *ser
 
     return result;
 }
-
 ```
-
-
 ##EVP
+
 
 EVP函数提供了一个高级的接口给OpenSSL密码函数。
 
@@ -1063,7 +985,7 @@ const EVP_CIPHER *EVP_aes_192_cbc(void);
 这些密码都是AES(高级加密标准)算法的变体。有两种不同长度的密钥显示，分别用于128位密钥和192位密钥。还存在所示的各种不同的加密模式，即CTR，CCM，GCM，XTS，ECB和CBC。不是所有算法都支持所有加密模式，所以你要在**EVP.h**里面寻找你想要的特定组合。以下（编辑的）从**evp.h**的提取显示了一些示例消息摘要函数。
 
 
-​```c
+```c
 const EVP_MD *EVP_md2(void);
 const EVP_MD *EVP_md4(void);
 const EVP_MD *EVP_md5(void);
@@ -1088,7 +1010,7 @@ const EVP_MD *EVP_sha512(void);
 * 'EVP_Key_and_Parameter_Generation)'
 
 
-##EVP对称加解密
+##EVP对称加密和解密
 OpenSSL中的libcrypto库提供了在各种算法和模式中执行对称加密和解密操作的函数。本页向您介绍执行简单加密和相应解密操作的基础知识。
 
 为了执行加密/解密，您需要知道：
@@ -1308,7 +1230,6 @@ The quick brown fox jumps over the lazy dog
 有关对称加密和解密操作的更多详细信息，请参阅OpenSSL文档手册：`EVP_EncryptInit（3）`
 
 ##填充
-
 默认情况下，OpenSSL使用PKCS填充。 如果您使用的模式允许您更改填充，则可以使用`EVP_CIPHER_CTX_set_padding`更改它。手册页`EVP_CIPHER_CTX_set_padding（）`启用或禁用填充。 默认情况下，使用标准块填充填充加密操作，并在解密时检查和删除填充。 如果填充参数为零，则不执行填充，则加密或解密的数据总量必须是块大小的倍数，否则将发生错误...
 
 PKCS填充通过添加值为n的n个填充字节来使加密数据的总长度成为块大小的倍数。 填充总是添加，所以如果数据已经是块大小的倍数，n将等于块大小。 例如，如果块大小是8并且11字节将被加密，则将添加值5的5个填充字节...
@@ -1385,7 +1306,7 @@ ctext.resize(out_len1 + out_len2);
 }
 ```
 
-### 注意一些不寻常的模式
+###注意一些不寻常的模式
 这里值得一提的是XTS模式（例如`EVP_aes_256_xts（）`）。 除了在IV参数中提供“tweak”之外，它的工作方式与上面所示的完全相同。 另一个“困扰”是XTS模式期望的密钥是正常的两倍。 因此，`EVP_aes_256_xts（）`期望一个512位长的密钥。
 认证加密模式（GCM）的工作方式与上述方式基本相同，但需要一些特殊处理。 有关更多详细信息，请参阅“EVP身份验证加密和解密”。
 ##EVP认证加密和解密
@@ -1472,14 +1393,14 @@ EVP_CIPHER_CTX_free(ctx);
 return ciphertext_len;
 }
 ```
-### 使用GCM模式的已验证解密
+###使用GCM模式的已验证解密
 
 同样，解密操作与如这里所描述的正常对称解密大致相同。 主要区别是：
 
 * 您可以选择使用`EVP_CIPHER_CTX_ctrl`传递IV长度
 * AAD数据在对`EVP_DecryptUpdate`的零个或多个调用中传递，输出缓冲区设置为NULL
 * 在`EVP_DecryptFinal_ex`调用之前，对`EVP_CIPHER_CTX_ctrl`的新调用提供了标记
-  *` EVP_DecryptFinal_ex`的非正值返回值应被视为认证密文和/或AAD的失败。 它不一定表示更严重的错误。
+*` EVP_DecryptFinal_ex`的非正值返回值应被视为认证密文和/或AAD的失败。 它不一定表示更严重的错误。
 
 参考下面代码示例
 
@@ -1546,7 +1467,7 @@ return -1;
 }
 ```
 
-### 使用CCM模式的已验证加密
+###使用CCM模式的已验证加密
 
 使用CCM模式加密与使用GCM加密非常相似，但需要记住一些其他事项。
 
@@ -1620,7 +1541,7 @@ EVP_CIPHER_CTX_free(ctx);
 return ciphertext_len;
 }
 ```
-### 使用CCM模式的已认证解密
+###使用CCM模式的已认证解密
 
 使用CCM模式的解密与使用GCM的解密非常相同，但需要考虑一些其他事项。
 
@@ -1756,9 +1677,7 @@ EVP_CIPHER_CTX_free(ctx);
 return ciphertext_len;
 }
 ```
-
-
-### 打开包络
+###打开包络
 使用EVP_Open *函数集在以下步骤中打开一个包络：
 
 * 初始化上下文
@@ -1808,3 +1727,116 @@ EVP_CIPHER_CTX_free(ctx);
 return plaintext_len;
 }
 ```
+
+##Libcrypto接口
+OpenSSL提供了两个主要的函数库：libssl和libcrypto。libcrypto库提供了基本的关于密码学的一些常规函数，并且被libssl库所调用。但是你也可以仅使用libcrypto库而不使用libssl库。	
+
+###开始   
+要使用libcrypto库，要将它放在开头位置  
+    
+
+```c                      
+ #include <openssl/conf.h>
+ #include <openssl/evp.h>
+ #include <openssl/err.h>
+
+ int main(int arc, char *argv[])
+{ 
+/* Load the human readable error strings for libcrypto */
+ERR_load_crypto_strings();
+
+/* Load all digest and cipher algorithms */
+OpenSSL_add_all_algorithms();
+
+/* Load config file, and other important initialisation */
+OPENSSL_config(NULL);
+
+/* ... Do some crypto stuff here ... */
+
+/* Clean up */
+
+/* Removes all digests and ciphers */
+EVP_cleanup();
+
+/* if you omit the next, a small leak may be left when you make use of the BIO (low level API) for e.g. base64 transformations */
+CRYPTO_cleanup_all_ex_data();
+
+/* Remove error strings */
+ERR_free_strings();
+
+return 0;
+}
+```
+
+###高级与低级接口
+                                                                    
+	
+对于大多数对Libcrypto库的使用，使用者需要用高级的接口来进行加密解密的操作。它被称为EVP接口（Envelop的简称）。这个接口提供了一系列的功能包括加密解密（对称与非对称),签名与验证，也集合了一些哈希和加密哈希函数的代码，提供算法和模板。使用高级的接口意味着很多关于密码的复杂操作是不可见的。提供了一个单独不变的接口。如果你需要改变你的代码，比如另使用一个算法，那么这是一个很小的改变如果你使用的是高级接口。除此之外，底层的事务比如填充以及加密都有给你准备好模板。
+
+参考EVP页面得到更多的关于高级接口的信息。
+
+除了高级接口，OpenSSL还提供了低级的接口来直接使用个别的算法。这些低级的接口并不推荐给新手使用者，但是提供了可控的范围当只使用高级接口不太合适的时候。注意当你使用FIPS模式时很多低级接口并不可用。
+
+###错误控制
+大多数OpenSSL的功能函数会返回一个整数来表明成功或者失败。比如一个函数会返回1表示成功，0表示失败。所有的返回都必须视情况检查和控制。
+
+普遍的是像下面的方式来控制错误。
+
+
+```c
+if(1 != EVP_xxx()) goto err;
+if(1 != EVP_yyy()) goto err;
+
+/* ... do some stuff ... */
+
+err:
+ERR_print_errors_fp(stderr);
+```
+注意并不是所有的libcrypto函数会返回0表示失败1表示成功。有些异常会绊倒粗心的程序员。例如：你想要检查一个签名是否正确通过函数返回1表示正确，0表示错误，-1表示一些坏事情发生了，像存储分配错误。所以如果你做：
+
+
+```c
+if (some_verify_function())
+/* signature successful */
+```
+如果有人能够加入一个坏事情发生的情况你最后也把它当作坏的，即使它是好的。这个突然出现在库里面并且被安装在安全释放中。这时你要做的就是查看使用手册或者它的来源。
+
+避免被这种潜在的错误烦恼的一个方法是经常使用这个习惯去检查错误当调用一个OpenSSL函数时：
+
+
+```c
+ if (1 != some_openssl_function())
+ /* handle error */
+ ```
+
+参考Libcrary Errors页面得到更多的关于OpenSSL错误的信息
+
+
+###进程安全
+   
+主要介绍的文章：Random fork-safety
+
+OpenSSL库的函数主要是异步信号不安全的，因此：
+
+* 不要从信号控制函数中调用OpenSSL函数
+* 不用在子进程中调用（exec或者_exit）
+* 不要调用OpenSSL从pthread_atfork() handlers 它本身必须是异步信号安全的。
+
+如果你有一个应用要使用OpenSSL在父进程和子进程（没有exec）并且没有正常的放大，那么你在使用其它RAND函数前需要在子进程中调用RAND_poll()
+
+###更多的函数库信息
+一些其它的网页覆盖了关于libcrypto具体的方面
+
+* 密码操作的高级接口
+* 密码算法
+* 输入输出系统
+* 椭圆曲线密码学
+
+
+
+
+
+                                                                  
+
+
+
