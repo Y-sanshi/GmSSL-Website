@@ -186,7 +186,7 @@ To change the point conversion form to **compressed**:
 
 # SEE ALSO
 
-[ecparam(1)](http://man.he.net/man1/ecparam), [dsa(1)](http://man.he.net/man1/dsa), [rsa(1)](http://man.he.net/man1/rsa)
+[ecparam(1)](ecparam.html), [dsa(1)](dsa.html), [rsa(1)](rsa.html)
 
 # COPYRIGHT
 
