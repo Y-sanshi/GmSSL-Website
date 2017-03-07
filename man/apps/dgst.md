@@ -174,13 +174,21 @@ command.
 # EXAMPLES
 
 To create a hex-encoded message digest of a file:
-    gmssl dgst -md5 -hex file.txt
+
+```shell
+gmssl dgst -md5 -hex file.txt
+```
 
 To sign a file using SHA-256 with binary file output:
-     gmssl dgst -sm3 -sign privatekey.pem -out signature.sign file.txt
+
+```shell
+gmssl dgst -sm3 -sign privatekey.pem -out signature.sign file.txt
+```
 
 To verify a signature:
-     gmssl dgst -sm3 -verify publickey.pem -signature signature.sign file.txt
+```shell
+gmssl dgst -sm3 -verify publickey.pem -signature signature.sign file.txt
+```
 
 # NOTES
 
