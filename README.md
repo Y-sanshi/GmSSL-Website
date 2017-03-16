@@ -13,8 +13,8 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
 
 - 2017年3月16日开始 Speck、Serpent、祖冲之算法的集成工作，预计于2017年4月初完成。
 
-   参与人员[Simon](https://github.com/zhaoxiaomeng),[SuChao](https://github.com/GGSuchao),[LaiWei](https://github.com/laiwei360735),[HanShanxin](https://github.com/HanShanxin)
-   
+   参与人员[Simon](https://github.com/zhaoxiaomeng),[SuChao](https://github.com/GGSuchao),[LaiWei](https://github.com/laiwei360735),[HanShanxin](https://github.com/HanShanxin) 
+
 ## 国密算法
 
 国密算法是国家商用密码算法的简称。自2012年以来，国家密码管理局以《中华人民共和国密码行业标准》的方式，陆续公布了SM2/SM3/SM4等密码算法标准及其应用规范。其中“SM”代表“商密”，即用于商用的、不涉及国家秘密的密码技术。其中SM2为基于椭圆曲线密码的公钥密码算法标准，包含数字签名、密钥交换和公钥加密，用于替换RSA/Diffie-Hellman/ECDSA/ECDH等国际算法；SM3为密码哈希算法，用于替代MD5/SHA-1/SHA-256等国际算法；SM4为分组密码，用于替代DES/AES等国际算法；SM9为基于身份的密码算法，可以替代基于数字证书的PKI/CA体系。通过部署国密算法，可以降低由弱密码和错误实现带来的安全风险和部署PKI/CA带来的开销。
