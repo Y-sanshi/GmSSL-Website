@@ -1,6 +1,5 @@
 ## 关于GmSSL
 
-change
 GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家商用密码)算法、SM2国密数字证书及基于SM2证书的SSL/TLS安全通信协议，支持国密硬件密码设备，提供符合国密规范的编程接口与命令行工具，可以用于构建PKI/CA、安全通信、数据加密等符合国密标准的安全应用。GmSSL项目是[OpenSSL](https://www.openssl.org)项目的分支，并与OpenSSL保持接口兼容。因此GmSSL可以替代应用中的OpenSSL组件，并使应用自动具备基于国密的安全能力。GmSSL项目采用对商业应用友好的类BSD开源许可证，开源且可以用于闭源的商业应用。GmSSL项目由北京大学[关志](http://infosec.pku.edu.cn/~guanzhi/)副研究员的密码学研究组开发维护，项目源码托管于[GitHub](https://github.com/guanzhi/GmSSL)。自2014年发布以来，GmSSL已经在多个项目和产品中获得部署与应用，并获得2015年度“一铭杯”中国Linux软件大赛二等奖(年度最高奖项)与[开源中国](https://www.oschina.net/p/GmSSL)密码类推荐项目。GmSSL项目的核心目标是通过开源的密码技术推动国内网络空间安全建设。
 
 ## 最新动态
@@ -9,6 +8,12 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
 - 2017年2月12日 支持完整的密码库Java语言封装[GmSSL-Java-Wrapper](http://gmssl.org/docs/java-api.html)
 - 2017年1月18日 更新了项目主页
 - [更多 ...](http://gmssl.org/docs/changelog.html)
+
+## 近期计划
+
+- 2017年3月16日开始 Speck、Serpent、祖冲之算法的集成工作，预计于2017年4月初完成。
+
+   参与人员[Simon](https://github.com/zhaoxiaomeng),[SuChao](https://github.com/GGSuchao),[LaiWei](https://github.com/laiwei360735),[HanShanxin](https://github.com/HanShanxin) 
 
 ## 国密算法
 
@@ -27,7 +32,7 @@ GmSSL是一个开源的密码工具箱，支持SM2/SM3/SM4/SM9等国密(国家�
 2. 编译与安装
 
    Linux平台 (其他平台的安装过程见[编译与安装](http://gmssl.org))
-   
+
    ```sh
    $ ./config no-saf no-sdf no-skf no-sof no-zuc
    $ make
