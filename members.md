@@ -17,6 +17,12 @@
 <!-- Responsive -->
 <link href="http://www.themes.alessioatzeni.com/html/brushed/_include/css/bootstrap-responsive.min.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css">
+<style>
+footer {
+    background: #ffffff;
+    text-align: left; 
+}
+</style>
 </head>
 <body style="
     background: white;
