@@ -20,7 +20,7 @@
 <style>
 footer {
     background: #ffffff;
-    text-align: left; 
+    text-align: left;
 }
 </style>
 </head>
@@ -59,31 +59,55 @@ footer {
             <div class="image-wrap">
                 <div class="hover-wrap">
                     <span class="overlay-img"></span>
-                    <span class="overlay-text-thumb">Leader</span>
+                    <span class="overlay-text-thumb">Contributor</span>
                 </div>
-                <img src="https://raw.githubusercontent.com/zhaoxiaomeng/Images/master/guan.jpg" alt="Zhi Guan">
+                <img src="https://raw.githubusercontent.com/zhaoxiaomeng/Images/master/yangyang.png" alt="Yang Yang">
             </div>
-            <h3 class="profile-name">Zhi Guan</h3>
-            <p class="profile-description">Doctor Guan is the Leader of GmSSL develop team</p>
-
+            <h3 class="profile-name">Yang Yang</h3>
+            <p class="profile-description">Doctor Yang is one of the contributors of GmSSL develop team</p>
         </div>
         <!-- End Profile -->
+
 
         <!-- Start Profile -->
-    	<div class="span4 profile">
-            <div class="image-wrap">
-                <div class="hover-wrap">
-                    <span class="overlay-img"></span>
-                    <span class="overlay-text-thumb">Leader</span>
-                </div>
-                <img src="https://raw.githubusercontent.com/zhaoxiaomeng/Images/master/guan.jpg" alt="Zhi Guan">
-            </div>
-            <h3 class="profile-name">Zhi Guan</h3>
-            <p class="profile-description">Doctor Guan is the Leader of GmSSL develop team</p>
-
-        </div>
+        <div class="span4 profile">
+               <div class="image-wrap">
+                   <div class="hover-wrap">
+                       <span class="overlay-img"></span>
+                       <span class="overlay-text-thumb">Contributor</span>
+                   </div>
+                   <img src="https://raw.githubusercontent.com/zhaoxiaomeng/Images/master/xmzhao.png" alt="Xiaomeng Zhao">
+               </div>
+               <h3 class="profile-name">Xiaomeng Zhao</h3>
+               <p class="profile-description">Xiaomeng Zhao is one of the contributors of GmSSL develop team</p>
+           </div>
         <!-- End Profile -->
-
+        <!-- Start Profile -->
+        <div class="span4 profile">
+               <div class="image-wrap">
+                   <div class="hover-wrap">
+                       <span class="overlay-img"></span>
+                       <span class="overlay-text-thumb">Contributor</span>
+                   </div>
+                   <img src="https://raw.githubusercontent.com/zhaoxiaomeng/Images/master/kangda.png" alt="Kangda Wang">
+               </div>
+               <h3 class="profile-name">Kangda Wang</h3>
+               <p class="profile-description">Kangda Wang is one of the contributors of GmSSL develop team</p>
+           </div>
+         <!-- End Profile -->
+         <!-- Start Profile -->
+        <div class="span4 profile">
+               <div class="image-wrap">
+                   <div class="hover-wrap">
+                       <span class="overlay-img"></span>
+                       <span class="overlay-text-thumb">Contributor</span>
+                   </div>
+                   <img src="https://raw.githubusercontent.com/zhaoxiaomeng/Images/master/anran.png" alt="Anran Li">
+               </div>
+               <h3 class="profile-name">Anran Li</h3>
+               <p class="profile-description">Anran Li is one of the contributors of GmSSL develop team</p>
+           </div>
+           <!-- End Profile -->
     </div>
     <!-- End People -->
 </div>
