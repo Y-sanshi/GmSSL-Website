@@ -18,13 +18,11 @@
 <link href="http://www.themes.alessioatzeni.com/html/brushed/_include/css/bootstrap-responsive.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container">
+<div>
     <!-- Title Page -->
     <div class="row">
-        <div class="span12">
-            <div class="title-page">
-                <h2 class="title">About Us</h2>
-            </div>
+        <div class="title-page">
+            <h2 class="title">About Us</h2>
         </div>
     </div>
     <!-- End Title Page -->
