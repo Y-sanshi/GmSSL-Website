@@ -14,8 +14,6 @@
 <!-- Mobile Internet Explorer ClearType Technology -->
 <!--[if IEMobile]>  <meta http-equiv="cleartype" content="on">  <![endif]-->
 
-<!-- Bootstrap -->
-<link href="http://www.themes.alessioatzeni.com/html/brushed/_include/css/bootstrap.min.css" rel="stylesheet">
 
 <!-- Main Style -->
 <link href="http://www.themes.alessioatzeni.com/html/brushed/_include/css/main.css" rel="stylesheet">
@@ -40,17 +38,8 @@
 <!-- Supersized -->
 <link href="http://www.themes.alessioatzeni.com/html/brushed/_include/css/supersized.css" rel="stylesheet">
 <link href="http://www.themes.alessioatzeni.com/html/brushed/_include/css/supersized.shutter.css" rel="stylesheet">
-
-<!-- Google Font -->
-<link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,200,200italic,300,300italic,400italic,600,600italic,700,700italic,900' rel='stylesheet' type='text/css'>
-
-
 </head>
-
-
 <body>
-
-
 <div class="container">
     <!-- Title Page -->
     <div class="row">
