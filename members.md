@@ -17,7 +17,9 @@
 <!-- Responsive -->
 <link href="http://www.themes.alessioatzeni.com/html/brushed/_include/css/bootstrap-responsive.min.css" rel="stylesheet">
 </head>
-<body>
+<body style="
+    background: white;
+">
 <div>
     <!-- Title Page -->
     <div class="row">
