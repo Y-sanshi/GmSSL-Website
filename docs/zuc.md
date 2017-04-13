@@ -1,30 +1,34 @@
 # 祖冲之(ZUC)序列密码
-####1、术语约定：
-#####1.1 比特 bit  
+
+#### 1、术语约定：
+
+##### 1.1 比特 bit  
 二进制字符0和1称之为比特
 
-#####1.2 字节 byte  
+##### 1.2 字节 byte  
 八个比特组成的比特串称为字节
 
-#####1.3 字 word        
+##### 1.3 字 word        
 
 有两个以上（包含两个）比特组成的比特串称之为字
 
-#####1.4 字表示 word representation  
+##### 1.4 字表示 word representation  
 本部份字默认采用十进制表示。当字采用其他进制表示时，总是在字的表示之前或之后添加指示符。例如，前缀0x指示该字采用十六进制表示，后缀下角标2指示该字采用二进制表示。
 
-#####1.5 高低位顺序 bit ordering  
+##### 1.5 高低位顺序 bit ordering  
 本部分规定字的最高位总是位于字表示中的最左边，最低位总是位于字表示中的最右边。  
-####2、符号和缩略语
-#####2.1 运算符 
 
-$+$                算术加法运算
+#### 2、符号和缩略语
 
-$mod$           整数取余运算    
+##### 2.1 运算符 
 
-$\oplus$                按比特位逐位异或运算  
+<img src="http://latex.codecogs.com/gif.latex?\ +" >      算术加法运算
 
-$ \boxplus  $                模<img src="http://chart.googleapis.com/chart?cht=tx&chl=2^{32}"tyle="border:none;">加法运算 
+<img src="http://latex.codecogs.com/gif.latex?\ mod" >            整数取余运算    
+
+<img src="http://latex.codecogs.com/gif.latex?\ oplus" >  按比特位逐位异或运算  
+
+<img src="http://latex.codecogs.com/gif.latex?\ boxplus" >      模<img src="http://chart.googleapis.com/chart?cht=tx&chl=2^{32}"tyle="border:none;">加法运算 
 
 ||               字符串连接符  
 
