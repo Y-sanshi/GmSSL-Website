@@ -7,7 +7,7 @@ GmSSL is an open source cryptographic toolbox that supports SM2 / SM3 / SM4 / SM
 - March 2, 2017 GmSSL project registered its OID {iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) GmSSL(49549)}
 - February 12, 2017 Java wrapper support for full crypto library  [GmSSL-Java-Wrapper](http://gmssl.org/docs/java-api.html)
 - January 18, 2017 Updated the project home page
-- [更多 ...](http://gmssl.org/docs/changelog.html)
+- [More ...](http://gmssl.org/docs/changelog.html)
 
 ## Recent Plan
 
