@@ -13,9 +13,9 @@
 <!-- Main Style -->
 <link href="https://raw.githubusercontent.com/zhaoxiaomeng/Images/master/_include/css/main.css" rel="stylesheet">
 <!-- FancyBox -->
-<link href="https://raw.githubusercontent.com/zhaoxiaomeng/Images/master/_include/css/fancybox/jquery.fancybox.css" rel="stylesheet">
+<link href="http://www.themes.alessioatzeni.com/html/brushed/_include/css/fancybox/jquery.fancybox.css" rel="stylesheet">
 <!-- Responsive -->
-<link href="https://raw.githubusercontent.com/zhaoxiaomeng/Images/master/_include/css/bootstrap-responsive.min.css" rel="stylesheet">
+<link href="http://www.themes.alessioatzeni.com/html/brushed/_include/css/bootstrap-responsive.min.css" rel="stylesheet">
 </head>
 <body style="
     background: white;
