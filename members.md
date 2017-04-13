@@ -16,10 +16,7 @@
 <link href="http://www.themes.alessioatzeni.com/html/brushed/_include/css/fancybox/jquery.fancybox.css" rel="stylesheet">
 <!-- Responsive -->
 <link href="http://www.themes.alessioatzeni.com/html/brushed/_include/css/bootstrap-responsive.min.css" rel="stylesheet">
-<style type="text/css">
-h1 {color:red}
-p {color:blue}
-</style>
+<link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body style="
     background: white;
