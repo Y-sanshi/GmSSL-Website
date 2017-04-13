@@ -86,7 +86,7 @@ Quick Start Guide describes the basic instructions for compiling, installing, an
    ```
 
 
-   ## project documentation
+   ## Project documentation
 
    - User manual
 
@@ -118,7 +118,7 @@ Quick Start Guide describes the basic instructions for compiling, installing, an
 
       * [BF-IBE (Boneh-Franklin Identity-Based Encryption)](http://gmssl.org/docs/bfibe.html)
 
-      * [BB <sub> 1 </ sub> -IBE (Boneh-Boyen Identity-Based Encryption)](http://gmssl.org/docs/bb1ibe.html)
+      * [BB-IBE (Boneh-Boyen Identity-Based Encryption)](http://gmssl.org/docs/bb1ibe.html)
 
    - password hardware
 
